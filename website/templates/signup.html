@@ -2,39 +2,101 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | GearGuard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<body class="bg-slate-900 h-screen flex items-center justify-center">
-    <div class="glass-panel w-full max-w-md p-8 rounded-2xl border border-slate-700/50">
-        <h2 class="text-2xl font-bold text-white text-center mb-6">Create Account</h2>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="mb-4 p-2 text-center text-xs rounded bg-rose-500/20 text-rose-400">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+<body class="bg-[#0b1120] text-slate-50">
 
-        <form action="{{ url_for('auth.signup') }}" method="POST" class="space-y-4">
-            <input type="text" name="name" placeholder="Full Name" required class="w-full bg-slate-800 border border-slate-700 rounded px-4 py-3 text-white text-sm">
-            <input type="email" name="email" placeholder="Email Address" required class="w-full bg-slate-800 border border-slate-700 rounded px-4 py-3 text-white text-sm">
-            
-            <select name="department_id" class="w-full bg-slate-800 border border-slate-700 rounded px-4 py-3 text-white text-sm">
-                {% for dept in departments %}
-                <option value="{{ dept.id }}">{{ dept.name }}</option>
-                {% endfor %}
-            </select>
-            
-            <input type="password" name="password" placeholder="Password" required class="w-full bg-slate-800 border border-slate-700 rounded px-4 py-3 text-white text-sm">
-            
-            <button type="submit" class="w-full bg-violet-600 hover:bg-violet-700 text-white font-bold py-3 rounded">Sign Up</button>
-        </form>
-        <p class="mt-4 text-center text-slate-400 text-xs">
-            Already have an account? <a href="{{ url_for('auth.login') }}" class="text-violet-400">Login</a>
-        </p>
+    <div class="min-h-screen flex w-full">
+        
+        <div class="hidden lg:flex w-1/2 relative bg-cover bg-center" 
+             style="background-image: url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop');">
+            <div class="absolute inset-0 bg-violet-900/80 mix-blend-multiply"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <div class="relative z-10 w-full h-full flex flex-col justify-between p-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-violet-600 rounded-lg flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-shield-halved text-white text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-bold tracking-tight text-white">GearGuard</span>
+                </div>
+                <div class="max-w-lg mb-8">
+                    <h1 class="text-5xl font-bold text-white mb-6 leading-tight">Join the Team.</h1>
+                    <p class="text-lg text-slate-300 font-light leading-relaxed">
+                        Create your account to start managing assets and tracking maintenance requests efficiently.
+                    </p>
+                </div>
+                <p class="text-sm text-slate-400 font-medium">© 2025 GearGuard Hackathon Project.</p>
+            </div>
+        </div>
+
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-[#0b1120]">
+            <div class="max-w-md w-full">
+                
+                <div class="mb-10 text-center lg:text-left">
+                    <h2 class="text-3xl font-bold text-white mb-2">Create Account</h2>
+                    <p class="text-slate-400 text-sm">Sign up to get started</p>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mb-6 p-4 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm flex items-center gap-3">
+                                <i class="fas fa-exclamation-circle"></i> {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form action="{{ url_for('auth.signup') }}" method="POST" class="space-y-6">
+                    
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500"><i class="far fa-user"></i></span>
+                            <input type="text" name="name" required placeholder="John Doe" 
+                                class="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500"><i class="far fa-envelope"></i></span>
+                            <input type="email" name="email" required placeholder="name@company.com" 
+                                class="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500"><i class="fas fa-lock"></i></span>
+                            <input type="password" name="password" required placeholder="••••••••" 
+                                class="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder-slate-600 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all">
+                        </div>
+                    </div>
+
+                    <button type="submit" 
+                        class="w-full bg-violet-600 hover:bg-violet-700 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-violet-900/20 transition-all transform hover:scale-[1.01] active:scale-[0.99] mt-2">
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="mt-8 text-center border-t border-slate-800 pt-6">
+                    <p class="text-slate-400 text-sm">
+                        Already have an account? 
+                        <a href="{{ url_for('auth.login') }}" class="text-violet-400 hover:text-violet-300 font-bold transition">Log In</a>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

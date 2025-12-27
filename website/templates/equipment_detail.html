@@ -1,60 +1,60 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="fade-in max-w-6xl mx-auto"> <div class="flex justify-between items-center mb-6">
+<div class="fade-in max-w-6xl mx-auto"> 
+    
+    <div class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-4">
             <a href="{{ url_for('equipment') }}" class="text-slate-400 hover:text-white transition flex items-center gap-2 text-sm font-medium">
                 <i class="fas fa-arrow-left"></i> Back
             </a>
-            <h2 class="text-2xl font-bold text-white tracking-tight">CNC Machine #3</h2>
+            <h2 class="text-2xl font-bold text-white tracking-tight">{{ equipment.name }}</h2>
         </div>
         
-        <a href="{{ url_for('maintenance_requests', q='CNC Machine #3') }}" 
+        <a href="{{ url_for('maintenance_requests', equipment_id=equipment.id) }}" 
            class="bg-slate-800 border border-slate-600 text-slate-300 px-4 py-2 rounded-lg flex items-center gap-3 hover:bg-slate-700 transition relative group shadow-sm cursor-pointer no-underline">
             
             <i class="fas fa-wrench text-violet-400 group-hover:text-violet-300"></i>
             
             <div class="text-left leading-tight">
-                <span class="block text-xs font-bold text-white">Maintenance</span>
+                <span class="block text-xs font-bold text-white">Active Issues</span>
             </div>
             
-            <span class="absolute -top-2 -right-2 bg-rose-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md border border-slate-900">3</span>
+            {% if active_maint > 0 %}
+            <span class="absolute -top-2 -right-2 bg-rose-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md border border-slate-900">
+                {{ active_maint }}
+            </span>
+            {% endif %}
         </a>
     </div>
 
-    <div class="glass-panel rounded-xl p-8 border border-slate-700 shadow-2xl">
-        <form>
+    <div class="glass-panel rounded-xl p-8 border border-slate-700 shadow-2xl bg-slate-900/50">
+        <form method="POST" action="{{ url_for('equipment_detail', id=equipment.id) }}">
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 mb-8">
                 
                 <div class="space-y-5">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Name</label>
-                        <input type="text" value="CNC Machine #3" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all font-medium">
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Equipment Name</label>
+                        <input type="text" name="name" value="{{ equipment.name }}" required
+                            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all font-medium">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Equipment Category</label>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Serial Number / Model</label>
+                        <input type="text" name="serial_number" value="{{ equipment.serial_number }}" required
+                            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5"><i class="far fa-building mr-1"></i> Department</label>
                         <div class="relative">
-                            <select class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
-                                <option>Machining</option>
-                                <option>Computers</option>
-                                <option>Vehicles</option>
-                            </select>
-                            <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5"><i class="far fa-building mr-1"></i> Company</label>
-                        <input type="text" value="Main Factory" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5"><i class="far fa-user mr-1"></i> Used By</label>
-                        <div class="relative">
-                            <select class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
-                                <option>Production Team A</option>
-                                <option>Logistics Dept</option>
+                            <select name="department" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
+                                {% for dept in departments %}
+                                <option value="{{ dept.id }}" {% if equipment.department_id == dept.id %}selected{% endif %}>
+                                    {{ dept.name }}
+                                </option>
+                                {% endfor %}
                             </select>
                             <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
                         </div>
@@ -62,18 +62,37 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Maintenance Team</label>
-                        <input type="text" value="Alpha Team" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-slate-400 text-sm cursor-not-allowed">
-                        <p class="text-[10px] text-slate-600 mt-1 italic">Auto-assigned based on equipment category</p>
+                        <div class="relative">
+                            <select name="team" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
+                                {% for team in teams %}
+                                <option value="{{ team.id }}" {% if equipment.team_id == team.id %}selected{% endif %}>
+                                    {{ team.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="space-y-5">
+                    
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Technician</label>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5"><i class="fas fa-map-marker-alt mr-1"></i> Location</label>
+                        <input type="text" name="location" value="{{ equipment.location }}" 
+                            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Work Center</label>
                         <div class="relative">
-                            <select class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
-                                <option>Mike Ross</option>
-                                <option>Sarah Chen</option>
+                            <select name="work_center" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
+                                <option value="">Select Work Center (Optional)</option>
+                                {% for wc in work_centers %}
+                                <option value="{{ wc.id }}">
+                                    {{ wc.name }} ({{ wc.code }})
+                                </option>
+                                {% endfor %}
                             </select>
                             <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
                         </div>
@@ -84,22 +103,6 @@
                         <input type="date" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all placeholder-slate-500">
                         <p class="text-[10px] text-slate-500 mt-1">Set a date to schedule equipment for scrap</p>
                     </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5"><i class="fas fa-map-marker-alt mr-1"></i> Used in Location</label>
-                        <input type="text" value="Building A, Floor 2" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Work Center</label>
-                        <div class="relative">
-                            <select class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
-                                <option>WC-001</option>
-                                <option>WC-002</option>
-                            </select>
-                            <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -108,19 +111,16 @@
                     <li class="mr-2">
                         <button type="button" class="inline-block p-4 text-violet-400 border-b-2 border-violet-500 rounded-t-lg active">Description</button>
                     </li>
-                    <li class="mr-2">
-                        <button type="button" class="inline-block p-4 text-slate-400 border-b-2 border-transparent hover:text-slate-300 hover:border-slate-300 rounded-t-lg transition">Product Information</button>
-                    </li>
                 </ul>
             </div>
             
             <div class="bg-slate-800/30 p-4 rounded-lg border border-slate-700/50 min-h-[100px]">
-                <textarea class="w-full bg-transparent border-none text-sm text-slate-300 focus:ring-0 p-0" rows="3">High-precision CNC machine used for manufacturing custom parts. Requires regular oil changes and calibration checks.</textarea>
+                <textarea name="description" class="w-full bg-transparent border-none text-sm text-slate-300 focus:ring-0 p-0" rows="3" placeholder="Add equipment notes here...">No detailed description available.</textarea>
             </div>
 
             <div class="mt-8 flex justify-end gap-3 pt-6 border-t border-slate-700/50">
-                <button type="button" class="px-5 py-2.5 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition">Cancel</button>
-                <button type="button" class="px-5 py-2.5 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg shadow-lg shadow-violet-500/20 transition transform hover:-translate-y-0.5">Save Changes</button>
+                <a href="{{ url_for('equipment') }}" class="px-5 py-2.5 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition">Cancel</a>
+                <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg shadow-lg shadow-violet-500/20 transition transform hover:-translate-y-0.5">Save Changes</button>
             </div>
         </form>
     </div>

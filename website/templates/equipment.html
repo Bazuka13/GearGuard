@@ -14,7 +14,13 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        {% for item in equipment_list %}
+        {% for item in equipment %}
+        
+        {# Active Status Logic #}
+        {% set active_reqs = item.requests | selectattr('status', 'in', ['new', 'in_progress']) | list %}
+        {% set status_text = 'Maintenance' if active_reqs else 'Active' %}
+        {% set status_class = 'bg-rose-500/10 text-rose-400 border-rose-500/20' if active_reqs else 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' %}
+
         <div class="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden hover:border-violet-500/50 transition group shadow-lg">
             
             <div class="p-5 border-b border-slate-800 bg-slate-800/20">
@@ -28,8 +34,8 @@
                             <p class="text-[10px] text-slate-500 font-mono">{{ item.serial_number }}</p>
                         </div>
                     </div>
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        Active
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold border {{ status_class }}">
+                        {{ status_text }}
                     </span>
                 </div>
             </div>
@@ -50,7 +56,8 @@
             </div>
 
             <div class="p-3 bg-slate-950/30 border-t border-slate-800 flex justify-end">
-                <a href="{{ url_for('equipment_detail', id=item.id) }}" class="text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded border border-slate-700 transition flex items-center gap-2">
+                <a href="{{ url_for('equipment_detail', id=item.id) }}" 
+                   class="text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded border border-slate-700 transition flex items-center gap-2">
                     View Details <i class="fas fa-arrow-right"></i>
                 </a>
             </div>

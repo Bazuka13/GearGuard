@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="fade-in max-w-7xl mx-auto">
+    
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Maintenance Requests</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Track and manage all repair tickets</p>
+        </div>
+        
+        <button onclick="openModal()" 
+            class="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-violet-900/20 flex items-center gap-2">
+            <i class="fas fa-plus"></i> New Request
+        </button>
+    </div>
+
+    <div class="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-900/80 text-slate-400 text-xs uppercase font-bold border-b border-slate-700">
+                    <th class="px-6 py-4">ID</th>
+                    <th class="px-6 py-4">Description</th>
+                    <th class="px-6 py-4">Equipment</th>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4">Team</th>
+                    <th class="px-6 py-4">Date</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800 text-sm">
+                {% for req in requests %}
+                <tr class="hover:bg-slate-800/50 transition group">
+                    <td class="px-6 py-4 text-slate-500 font-mono">#{{ req.id }}</td>
+                    <td class="px-6 py-4 text-white font-medium">
+                        {{ req.description }}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="flex items-center gap-2 text-slate-300 bg-slate-800 px-2 py-1 rounded border border-slate-700 w-fit">
+                            <i class="fas fa-cogs text-xs text-slate-500"></i> {{ req.equipment.name }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if req.status == 'new' %}
+                        <span class="bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded text-xs border border-rose-500/20 font-bold">New</span>
+                        {% elif req.status == 'in_progress' %}
+                        <span class="bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded text-xs border border-sky-500/20 font-bold">In Progress</span>
+                        {% elif req.status == 'repaired' %}
+                        <span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded text-xs border border-emerald-500/20 font-bold">Repaired</span>
+                        {% else %}
+                        <span class="bg-slate-700 text-slate-400 px-2 py-0.5 rounded text-xs border border-slate-600">Scrap</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-violet-300">
+                        {{ req.equipment.team.name if req.equipment.team else 'Unassigned' }}
+                    </td>
+                    <td class="px-6 py-4 text-slate-500 text-xs">{{ req.created_at.strftime('%Y-%m-%d') }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="px-6 py-12 text-center">
+                        <div class="flex flex-col items-center justify-center">
+                            <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center mb-3">
+                                <i class="fas fa-check text-emerald-500"></i>
+                            </div>
+                            <p class="text-slate-400 text-sm">All systems operational. No active requests.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="requestModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl w-full max-w-md transform transition-all scale-100">
+        
+        <div class="p-6 border-b border-slate-800 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-white">Create New Request</h3>
+            <button onclick="closeModal()" class="text-slate-500 hover:text-white transition"><i class="fas fa-times"></i></button>
+        </div>
+
+        <form action="{{ url_for('maintenance_requests') }}" method="POST" class="p-6 space-y-4">
+            
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Select Machine</label>
+                <div class="relative">
+                    <select name="equipment_id" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
+                        <option value="" disabled selected>Choose equipment...</option>
+                        {% for item in equipment_list %}
+                        <option value="{{ item.id }}">{{ item.name }} ({{ item.serial_number }})</option>
+                        {% endfor %}
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Issue Description</label>
+                <textarea name="description" required rows="3" placeholder="Describe the problem (e.g., Oil leak, Noise...)" 
+                    class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500"></textarea>
+            </div>
+
+            <div class="pt-2 flex gap-3">
+                <button type="button" onclick="closeModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-2.5 rounded-lg text-sm font-medium transition">Cancel</button>
+                <button type="submit" class="flex-1 bg-violet-600 hover:bg-violet-700 text-white py-2.5 rounded-lg text-sm font-medium transition shadow-lg shadow-violet-900/20">Submit Request</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('requestModal');
+
+    function openModal() {
+        modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+        modal.classList.add('hidden');
+    }
+
+    // Close on click outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+</script>
+{% endblock %}

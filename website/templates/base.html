@@ -7,12 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
     <style>
-        /* Custom scrollbar for better look */
+        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        body {
+            zoom: 90%; }
+        
+
     </style>
 </head>
 <body class="flex h-screen overflow-hidden bg-slate-900 text-slate-50 font-sans">
@@ -50,7 +56,7 @@
                 </a>
                 {% endmacro %}
 
-                {{ nav_link('dashboard', 'fa-solid fa-grid-2', 'Dashboard') }}
+                {{ nav_link('dashboard', 'fa-solid fa-border-all', 'Dashboard') }}
                 {{ nav_link('schedule', 'fa-regular fa-calendar', 'Calendar') }}
                 {{ nav_link('maintenance_requests', 'fa-regular fa-clipboard', 'Requests') }}
                 {{ nav_link('equipment', 'fa-solid fa-cog', 'Equipment') }}

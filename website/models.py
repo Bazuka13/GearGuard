@@ -2,104 +2,71 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime
 
+# 👇 DATABASE INSTANCE YAHIN BANEGA
 db = SQLAlchemy()
 
-# =========================
-# Department
-# =========================
+# 1. DEPARTMENTS
 class Department(db.Model):
-    __tablename__ = 'department'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
+    users = db.relationship('User', backref='department', lazy=True)
+    equipment = db.relationship('Equipment', backref='department', lazy=True)
 
-    employees = db.relationship('User', backref='department', lazy=True)
-    equipments = db.relationship('Equipment', backref='department', lazy=True)
-
-# =========================
-# Users (Employees)
-# =========================
-class User(UserMixin, db.Model):
-    __tablename__ = 'user'
+# 2. TEAMS
+class MaintenanceTeam(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    technicians = db.relationship('Technician', backref='team', lazy=True)
+    equipment = db.relationship('Equipment', backref='team', lazy=True)
 
+# 3. USERS (Employees)
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    name = db.Column(db.String(150), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
     department_id = db.Column(db.Integer, db.ForeignKey('department.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    requests = db.relationship('MaintenanceRequest', backref='created_by_user', lazy=True)
-    
-    # Helper to distinguish from Technician
-    @property
-    def role(self):
-        return 'Employee'
+# 4. TECHNICIANS
+class Technician(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    name = db.Column(db.String(150), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    team_id = db.Column(db.Integer, db.ForeignKey('maintenance_team.id'), nullable=False)
 
-# =========================
-# Maintenance Teams
-# =========================
-class MaintenanceTeam(db.Model):
-    __tablename__ = 'maintenance_team'
+# 5. EQUIPMENT (Machines)
+class Equipment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-
-    technicians = db.relationship('Technician', backref='team', lazy=True)
-    equipments = db.relationship('Equipment', backref='team', lazy=True)
-
-# =========================
-# Technicians (Pre-registered)
-# =========================
-class Technician(UserMixin, db.Model):
-    __tablename__ = 'technician'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), nullable=False)
-    email = db.Column(db.String(150), unique=True, nullable=False)
-    password_hash = db.Column(db.String(256), nullable=False)
-
-    team_id = db.Column(db.Integer, db.ForeignKey('maintenance_team.id'), nullable=False)
-    photo_url = db.Column(db.String(255))
-
-    requests = db.relationship('MaintenanceRequest', backref='technician', lazy=True)
-
-    @property
-    def role(self):
-        return 'Technician'
-
-# =========================
-# Equipment (Predefined)
-# =========================
-class Equipment(db.Model):
-    __tablename__ = 'equipment'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150), nullable=False)
     serial_number = db.Column(db.String(100), unique=True, nullable=False)
-    location = db.Column(db.String(150))
-    photo_url = db.Column(db.String(255))
-
-    department_id = db.Column(db.Integer, db.ForeignKey('department.id'), nullable=False)
-    team_id = db.Column(db.Integer, db.ForeignKey('maintenance_team.id'), nullable=False)
-
+    location = db.Column(db.String(100))
+    department_id = db.Column(db.Integer, db.ForeignKey('department.id'))
+    team_id = db.Column(db.Integer, db.ForeignKey('maintenance_team.id'))
     requests = db.relationship('MaintenanceRequest', backref='equipment', lazy=True)
 
-# =========================
-# Maintenance Requests
-# =========================
+# 6. MAINTENANCE REQUESTS
 class MaintenanceRequest(db.Model):
-    __tablename__ = 'maintenance_request'
     id = db.Column(db.Integer, primary_key=True)
-
-    description = db.Column(db.Text, nullable=False)
-    problem_image = db.Column(db.String(255))
-
-    status = db.Column(
-        db.String(50),
-        default='new'   # new -> in_progress -> repaired -> scrap
-    )
-
+    description = db.Column(db.String(500), nullable=False)
+    status = db.Column(db.String(20), default='new') # new, in_progress, repaired, scrap
     equipment_id = db.Column(db.Integer, db.ForeignKey('equipment.id'), nullable=False)
-    team_id = db.Column(db.Integer, db.ForeignKey('maintenance_team.id'), nullable=False)
-    technician_id = db.Column(db.Integer, db.ForeignKey('technician.id'))
-
+    team_id = db.Column(db.Integer, db.ForeignKey('maintenance_team.id'))
+    technician_id = db.Column(db.Integer, db.ForeignKey('technician.id'), nullable=True)
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     duration_hours = db.Column(db.Float, default=0.0)
+    
+    # Relationships for easy access
+    technician = db.relationship('Technician', backref='requests')
+    creator = db.relationship('User', backref='requests')
+
+# 7. WORK CENTERS
+class WorkCenter(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    code = db.Column(db.String(50), unique=True, nullable=False)
+    cost_per_hour = db.Column(db.Float, default=0.0)
+    capacity_efficiency = db.Column(db.Integer, default=100)
+    oee_target = db.Column(db.Integer, default=85)
