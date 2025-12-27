@@ -7,83 +7,98 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Custom scrollbar for better look */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
 </head>
-<body class="flex h-screen overflow-hidden bg-slate-900 text-slate-50">
+<body class="flex h-screen overflow-hidden bg-slate-900 text-slate-50 font-sans">
 
-    <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between z-20">
+    <aside class="group relative flex flex-col justify-between bg-slate-900 border-r border-slate-800 z-50 
+                  w-20 hover:w-64 transition-all duration-300 ease-in-out shadow-2xl">
         
         <div>
-            <div class="p-6 flex items-center gap-3">
-                <div class="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center shadow-lg shadow-violet-900/20">
+            <div class="h-20 flex items-center px-6 overflow-hidden whitespace-nowrap border-b border-slate-800/50">
+                <div class="min-w-[32px] w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center shadow-lg shadow-violet-900/20 flex-shrink-0">
                     <i class="fa-solid fa-shield-halved text-white"></i>
                 </div>
-                <div>
+                <div class="ml-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75">
                     <h1 class="font-bold text-lg text-white tracking-tight">GearGuard</h1>
                     <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Maintenance Hub</p>
                 </div>
             </div>
             
-            <nav class="mt-2 space-y-1 px-3">
-                <a href="{{ url_for('dashboard') }}" class="sidebar-link {{ 'active' if page == 'dashboard' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-solid fa-grid-2 text-lg w-5 text-center"></i> Dashboard
+            <nav class="mt-4 space-y-1 px-3">
+                
+                {% macro nav_link(endpoint, icon, label) %}
+                <a href="{{ url_for(endpoint) }}" 
+                   class="flex items-center px-3 py-3 rounded-md transition-all duration-200 group/item overflow-hidden whitespace-nowrap
+                          {{ 'bg-slate-800 text-white shadow-md border border-slate-700' if page == endpoint else 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+                    
+                    <i class="{{ icon }} text-lg w-6 text-center flex-shrink-0 transition-colors {{ 'text-violet-400' if page == endpoint }}"></i>
+                    
+                    <span class="ml-4 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-75 transform translate-x-[-10px] group-hover:translate-x-0">
+                        {{ label }}
+                    </span>
+                    
+                    {% if page == endpoint %}
+                    <span class="ml-auto w-1.5 h-1.5 rounded-full bg-violet-500 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    {% endif %}
                 </a>
-                <a href="{{ url_for('schedule') }}" class="sidebar-link {{ 'active' if page == 'schedule' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-regular fa-calendar text-lg w-5 text-center"></i> Calendar
-                </a>
-                <a href="{{ url_for('maintenance_requests') }}" class="sidebar-link {{ 'active' if page == 'requests' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-regular fa-clipboard text-lg w-5 text-center"></i> Requests
-                </a>
-                <a href="{{ url_for('equipment') }}" class="sidebar-link {{ 'active' if page == 'equipment' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-solid fa-cog text-lg w-5 text-center"></i> Equipment
-                </a>
-                <a href="{{ url_for('teams') }}" class="sidebar-link {{ 'active' if page == 'teams' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-solid fa-users text-lg w-5 text-center"></i> Teams
-                </a>
-                <a href="{{ url_for('work_centers') }}" class="sidebar-link {{ 'active' if page == 'work_centers' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-solid fa-industry text-lg w-5 text-center"></i> Work Centers
-                </a>
-                <a href="{{ url_for('reporting') }}" class="sidebar-link {{ 'active' if page == 'reporting' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
-                    <i class="fa-solid fa-chart-bar text-lg w-5 text-center"></i> Reporting
-                </a>
+                {% endmacro %}
+
+                {{ nav_link('dashboard', 'fa-solid fa-grid-2', 'Dashboard') }}
+                {{ nav_link('schedule', 'fa-regular fa-calendar', 'Calendar') }}
+                {{ nav_link('maintenance_requests', 'fa-regular fa-clipboard', 'Requests') }}
+                {{ nav_link('equipment', 'fa-solid fa-cog', 'Equipment') }}
+                {{ nav_link('teams', 'fa-solid fa-users', 'Teams') }}
+                {{ nav_link('work_centers', 'fa-solid fa-industry', 'Work Centers') }}
+                {{ nav_link('reporting', 'fa-solid fa-chart-bar', 'Reporting') }}
+
             </nav>
         </div>
 
-        <div class="p-4 border-t border-slate-800">
-            <div class="flex items-center justify-between p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
-                <div class="flex items-center gap-3 overflow-hidden">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-xs font-bold text-white shadow-md">
-                        {{ session.get('user_name', 'User')[:2].upper() }}
-                    </div>
-                    
-                    <div class="overflow-hidden">
-                        <p class="text-xs font-bold text-white truncate w-24 leading-tight">{{ session.get('user_name', 'Guest') }}</p>
-                        <p class="text-[10px] text-slate-500 capitalize leading-tight">{{ session.get('user_role', 'Technician') }}</p>
-                    </div>
+        <div class="p-4 border-t border-slate-800 overflow-hidden whitespace-nowrap">
+            <div class="flex items-center p-2 rounded-lg bg-slate-800/30 border border-slate-700/30 group-hover:bg-slate-800 transition-colors">
+                
+                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-xs font-bold text-white shadow-md cursor-pointer">
+                    {{ session.get('user_name', 'User')[:2].upper() }}
                 </div>
                 
-                <a href="{{ url_for('auth.logout') }}" class="text-slate-400 hover:text-rose-500 transition p-1.5 hover:bg-rose-500/10 rounded-md" title="Logout">
+                <div class="ml-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-32">
+                    <p class="text-xs font-bold text-white truncate">{{ session.get('user_name', 'Guest') }}</p>
+                    <p class="text-[10px] text-slate-500 capitalize">{{ session.get('user_role', 'Technician') }}</p>
+                </div>
+                
+                <a href="{{ url_for('auth.logout') }}" class="ml-auto text-slate-400 hover:text-rose-500 transition opacity-0 group-hover:opacity-100 p-1.5" title="Logout">
                     <i class="fas fa-sign-out-alt"></i>
                 </a>
             </div>
         </div>
     </aside>
 
-    <main class="flex-1 overflow-y-auto p-8 relative scroll-smooth">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="mb-6 space-y-2">
-                    {% for category, message in messages %}
-                        <div class="p-3 rounded-lg text-sm font-medium border flex items-center gap-3 shadow-lg animate-pulse
-                            {{ 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' if category == 'success' else 'bg-rose-500/10 text-rose-400 border-rose-500/20' }}">
-                            <i class="{{ 'fas fa-check-circle' if category == 'success' else 'fas fa-exclamation-circle' }}"></i>
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+    <main class="flex-1 overflow-y-auto relative scroll-smooth bg-[#0b1120]">
+        <div class="p-8 max-w-7xl mx-auto">
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-6 space-y-2">
+                        {% for category, message in messages %}
+                            <div class="p-3 rounded-lg text-sm font-medium border flex items-center gap-3 shadow-lg animate-in slide-in-from-top-2
+                                {{ 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' if category == 'success' else 'bg-rose-500/10 text-rose-400 border-rose-500/20' }}">
+                                <i class="{{ 'fas fa-check-circle' if category == 'success' else 'fas fa-exclamation-circle' }}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
 
-        {% block content %}{% endblock %}
+            {% block content %}{% endblock %}
+        </div>
     </main>
 
 </body>
