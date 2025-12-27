@@ -1,15 +1,25 @@
 from flask import Flask
 import views
+
 app = Flask(__name__)
 
-# This connects the URL '/' to the index function in views.py
+# 1. Dashboard / Kanban Route
 app.add_url_rule('/', 'index', views.index)
 
-# This connects '/add-equipment' to the equipment function
-app.add_url_rule('/add-equipment', 'create_equipment', views.create_equipment, methods=['GET', 'POST'])
+# 2. Report Issue (Breakdown Flow)
+app.add_url_rule('/new-request', 'new_request', views.new_request, methods=['GET', 'POST'])
 
-app.add_url_rule('/new-request', 'create_request', views.create_request, methods=['GET', 'POST'])
+# 3. Equipment Detail (Smart Button Page)
+app.add_url_rule('/equipment/<name>', 'equipment_detail', views.equipment_detail)
+
+# 4. Maintenance Units (Teams Page)
+app.add_url_rule('/teams', 'maintenance_teams', views.maintenance_teams)
+
+# 5. Operational Schedule (Calendar View)
+app.add_url_rule('/calendar', 'maintenance_calendar', views.maintenance_calendar)
+
+# 6. NEW: Add Entry Logic (Handles the Modal Form)
+app.add_url_rule('/calendar/add', 'add_calendar_entry', views.add_calendar_entry, methods=['POST'])
 
 if __name__ == "__main__":
-    # debug=True allows the server to auto-restart when you save a file
     app.run(debug=True, port=5000)

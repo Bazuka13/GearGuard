@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@400;700&display=swap"
+        rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    :root {
+        --panel-bg: rgba(255, 255, 255, 0.03);
+        --accent-glow: #00d2ff;
+        --text-main: #e2e8f0;
+    }
+
+    body {
+        background: #0a0e14 !important;
+        color: var(--text-main) !important;
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    /* High-Level Header Font */
+    h1,
+    h2,
+    .team-title {
+        font-family: 'Orbitron', sans-serif !important;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--accent-glow);
+        text-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+    }
+
+    .glass-unit-card {
+        background: var(--panel-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 25px;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .glass-unit-card:hover {
+        border-color: var(--accent-glow);
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    }
+
+    .unit-icon {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        filter: drop-shadow(0 0 10px var(--accent-glow));
+    }
+
+    .member-row {
+        background: rgba(255, 255, 255, 0.02);
+        margin-bottom: 8px;
+        padding: 10px;
+        border-radius: 8px;
+        border-left: 3px solid transparent;
+        transition: 0.3s;
+    }
+
+    .member-row:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-left-color: var(--accent-glow);
+    }
+
+    .member-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: block;
+    }
+
+    .member-role {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold mb-2">Technical Units</h2>
+        <p class="text-secondary small" style="letter-spacing: 2px;">GEARGUARD OPERATIONAL PERSONNEL [cite: 20]</p>
+    </div>
+
+    <div class="row g-4">
+        {% for team in teams %}
+        <div class="col-lg-4 col-md-6">
+            <div class="glass-unit-card h-100">
+                <div class="unit-icon">{{ team.icon }}</div>
+                <h4 class="team-title mb-4" style="font-size: 1.1rem;">{{ team.name }}</h4>
+                <div class="member-container">
+                    {% for member in team.members %}
+                    <div class="member-row">
+                        <span class="member-name">{{ member.name }}</span> <span class="member-role">{{ member.role
+                            }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-4 pt-3 border-top border-secondary">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-dark border border-info text-info"
+                            style="font-size: 0.6rem;">ACTIVE_UNIT</span>
+                        <small class="text-muted" style="font-size: 0.6rem;">REQ_AUTH: TRUE</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

@@ -1,24 +1,170 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>GearGuard - Maintenance Tracker</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GearGuard | Industrial OS</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0e14;
+            --accent-cyan: #00d2ff;
+            --accent-green: #00ff88;
+        }
+
+        body {
+            background-color: var(--bg-dark) !important;
+            color: #e2e8f0 !important;
+            font-family: 'Inter', sans-serif !important;
+            padding-top: 100px;
+            min-height: 100vh;
+        }
+
+        /* 2. Global Loader [2.5 Second Duration] */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-dark);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 210, 255, 0.1);
+            border-top-color: var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 3. Cyber-OS Navbar */
+        .navbar-custom {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 999;
+            padding: 15px 0;
+        }
+
+        .nav-brand-tech {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan) !important;
+            letter-spacing: 3px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .nav-link-custom {
+            color: #94a3b8 !important;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            margin-left: 20px;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .nav-link-custom:hover {
+            color: var(--accent-cyan) !important;
+            text-shadow: 0 0 8px var(--accent-cyan);
+        }
+
+        /* 4. Global Success Toast */
+        .toast-notification {
+            position: fixed;
+            top: 110px;
+            right: -400px;
+            background: rgba(10, 14, 20, 0.95);
+            border: 1px solid var(--accent-green);
+            padding: 15px 25px;
+            border-radius: 12px;
+            z-index: 10001;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        .toast-notification.show {
+            right: 30px;
+        }
+    </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="/">GearGuard</a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="/new-request">Report Breakdown</a>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <div
+            style="margin-top: 20px; font-family: 'Orbitron'; color: var(--accent-cyan); letter-spacing: 3px; font-size: 0.7rem;">
+            SYSTEM_READY</div>
+    </div>
+
+    <div id="successToast" class="toast-notification">
+        <div class="d-flex align-items-center">
+            <div
+                style="height:10px; width:10px; background:var(--accent-green); border-radius:50%; margin-right:15px; box-shadow:0 0 10px var(--accent-green);">
+            </div>
+            <div>
+                <div style="font-family: 'Orbitron'; font-size: 0.7rem; color: var(--accent-green);">DATA_SYNCHRONIZED
+                </div>
+                <div style="font-size: 0.7rem; opacity: 0.7;">Mission committed to schedule.</div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar-custom">
+        <div class="container d-flex justify-content-between">
+            <a class="nav-brand-tech" href="/">GEARGUARD_OS</a>
+            <div>
+                <a class="nav-link-custom" href="/">Kanban</a>
+                <a class="nav-link-custom" href="/calendar">Schedule</a>
+                <a class="nav-link-custom" href="/teams">Units</a>
+                <a class="nav-link-custom btn btn-outline-info btn-sm ms-3" href="/new-request"
+                    style="color:white !important; border-radius:20px;">+ REPORT</a>
             </div>
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container pb-5">
         {% block content %}{% endblock %}
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Loader logic (2.5 seconds)
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 800);
+            }, 2000);
+        });
+
+        // Toast logic (Global function)
+        function showToast() {
+            const toast = document.getElementById('successToast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+    </script>
 </body>
 
 </html>

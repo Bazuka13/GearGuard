@@ -1,0 +1,159 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    :root {
+        --accent-blue: #00d2ff;
+        --accent-red: #ff2d55;
+        --glass: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Main Container with Entrance Animation */
+    .asset-card {
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 30px;
+        padding: 40px;
+        animation: fadeInScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    h3 {
+        font-family: 'Orbitron', sans-serif !important;
+        letter-spacing: 4px;
+        color: var(--accent-blue);
+    }
+
+    .spec-label {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.7rem;
+        color: #94a3b8;
+        letter-spacing: 2px;
+    }
+
+    .spec-value {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.1rem;
+        color: #f8fafc;
+        font-weight: 600;
+    }
+
+    /* The Smart Button badge logic */
+    .smart-btn {
+        background: transparent;
+        border: 1px solid var(--accent-blue);
+        color: var(--accent-blue);
+        font-family: 'Orbitron', sans-serif;
+        padding: 10px 25px;
+        border-radius: 50px;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+
+    .smart-btn:hover {
+        background: var(--accent-blue);
+        color: black;
+        box-shadow: 0 0 20px var(--accent-blue);
+    }
+
+    /* Scrap Area */
+    .scrap-zone {
+        background: rgba(255, 45, 85, 0.05);
+        border: 1px dashed var(--accent-red);
+        border-radius: 20px;
+        padding: 25px;
+        margin-top: 30px;
+    }
+
+    /* Footer Project Tape */
+    .project-tape {
+        background: #00d2ff;
+        color: black;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 0.6rem;
+        padding: 5px;
+        text-align: center;
+        border-radius: 0 0 30px 30px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+</style>
+
+<div class="container py-5">
+    <div class="asset-card position-relative shadow-2xl">
+
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <span class="text-secondary small">UNIT_ID: {{ equipment.serial }}</span>
+                <h3>{{ name }}</h3>
+            </div>
+
+            <a href="/" class="smart-btn position-relative">
+                MAINTENANCE_HISTORY
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-lg">
+                    {{ count }}
+                </span>
+            </a>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="spec-label">SYSTEM_SPECS</div>
+                <div class="spec-value">{{ equipment.specs }}</div>
+            </div>
+            <div class="col-md-3">
+                <div class="spec-label">PHYSICAL_LOC</div>
+                <div class="spec-value">{{ equipment.location }}</div>
+            </div>
+            <div class="col-md-3">
+                <div class="spec-label">CORE_HEALTH</div>
+                <div class="spec-value text-success">{{ equipment.health }}</div>
+            </div>
+            <div class="col-md-3">
+                <div class="spec-label">LAST_OPTIMIZATION</div>
+                <div class="spec-value">{{ equipment.last_service }}</div>
+            </div>
+        </div>
+
+        <hr class="border-secondary opacity-25">
+
+        <div class="scrap-zone">
+            {% if equipment.is_scrap %}
+            <div class="text-center">
+                <h5 class="text-danger fw-bold" style="font-family:'Orbitron';">⚠️ DECOMMISSIONED_WARNING</h5>
+                <p class="mb-0 text-secondary">This asset is marked as SCRAP. No future maintenance protocols allowed.
+                </p>
+            </div>
+            {% else %}
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-white mb-1">DECOMMISSION_ASSET</h6>
+                    <p class="small text-secondary mb-0">Initialize scrap protocol if machine is beyond restoration.</p>
+                </div>
+                <a href="/equipment/{{ name }}/scrap" class="btn btn-outline-danger px-4 rounded-pill fw-bold"
+                    style="font-size: 0.7rem;">
+                    MARK_AS_SCRAP
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="project-tape">
+            GEARGUARD_PROJECT_V1.0 // TRACKING: ASSET_LIFECYCLE // PROTOCOL: KANBAN_MAINTENANCE // STATUS: ENCRYPTED
+        </div>
+    </div>
+</div>
+{% endblock %}
