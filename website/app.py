@@ -1,16 +1,51 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+import os  # <--- Import OS
+from flask import Flask, render_template, redirect, url_for, session
+from models import db
+from auth import auth_bp
+from dotenv import load_dotenv  # <--- Import DotEnv
+
+# Load variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
-# --- ROUTES ---
+# --- CONFIGURATION (Dynamic) ---
+
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'fallback_secret_key')
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL') 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# INITIALIZE DB
+db.init_app(app)
+
+# REGISTER BLUEPRINT
+app.register_blueprint(auth_bp)
+
+# Inject current user info into all templates so templates can show actual user name and designation
+@app.context_processor
+def inject_current_user():
+    return {
+        'current_user_name': session.get('user_name'),
+        'current_user_role': session.get('user_role') or session.get('user_designation')
+    }
+
+# --- PROTECTED ROUTES ---
 
 @app.route('/')
 def home():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
     return redirect(url_for('dashboard'))
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('index.html', page='dashboard')
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    return render_template('index.html', page='dashboard', user_name=session.get('user_name'))
+
+
 
 @app.route('/schedule')
 def schedule():
@@ -65,4 +100,6 @@ def get_team_info(equipment_id):
     return jsonify({'team': '', 'lead': ''})
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)

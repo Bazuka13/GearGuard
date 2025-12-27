@@ -2,3 +2,8 @@
 .env
 __pycache__/
 *.pyc
+
+.env
+__pycache__/
+instance/
+.DS_Store
