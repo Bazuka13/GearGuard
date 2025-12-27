@@ -1,75 +1,162 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="fade-in">
+<!--
+  Equipment Detail Template
+  Purpose: view and edit a single equipment record.
+  Expected context variables:
+    - equipment: Equipment object (id, name, serial_number, location, department_id, team_id, etc.)
+    - departments: list of Department objects for the department select
+    - teams: list of MaintenanceTeam objects for the team select
+    - work_centers: list of WorkCenter objects for optional assignment
+    - active_maint: integer count of active maintenance requests for badges
+  Notes:
+    - Form posts to the same route and updates equipment on submit.
+    - Template mixes Jinja for data binding and standard HTML for layout.
+-->
+<div class="fade-in max-w-6xl mx-auto"> 
+    
+    <!-- Header: back link, equipment title and quick access to active issues -->
     <div class="flex justify-between items-center mb-6">
-        <div>
-            <h2 class="text-xl font-bold text-white tracking-tight">Equipment Inventory</h2>
-            <p class="text-xs text-slate-400 mt-0.5">Manage machinery and assets</p>
+        <div class="flex items-center gap-4">
+            <a href="{{ url_for('equipment') }}" class="text-slate-400 hover:text-white transition flex items-center gap-2 text-sm font-medium">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <!-- Equipment name displayed as main heading -->
+            <h2 class="text-2xl font-bold text-white tracking-tight">{{ equipment.name }}</h2>
         </div>
-        <button class="bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 rounded-md flex items-center gap-2 text-xs font-medium shadow-lg transition-all">
-            <i class="fas fa-plus"></i> Add Machine
-        </button>
+        
+        <!-- Button linking to the maintenance request list filtered by this equipment.
+             Badge shown only when active_maint > 0 -->
+        <a href="{{ url_for('maintenance_requests', equipment_id=equipment.id) }}" 
+           class="bg-slate-800 border border-slate-600 text-slate-300 px-4 py-2 rounded-lg flex items-center gap-3 hover:bg-slate-700 transition relative group shadow-sm cursor-pointer no-underline">
+            
+            <i class="fas fa-wrench text-violet-400 group-hover:text-violet-300"></i>
+            
+            <div class="text-left leading-tight">
+                <span class="block text-xs font-bold text-white">Active Issues</span>
+            </div>
+            
+            {% if active_maint > 0 %}
+            <!-- Active issues badge -->
+            <span class="absolute -top-2 -right-2 bg-rose-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md border border-slate-900">
+                {{ active_maint }}
+            </span>
+            {% endif %}
+        </a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        {% for item in equipment %}
-        
-        {# Active Status Logic #}
-        {% set active_reqs = item.requests | selectattr('status', 'in', ['new', 'in_progress']) | list %}
-        {% set status_text = 'Maintenance' if active_reqs else 'Active' %}
-        {% set status_class = 'bg-rose-500/10 text-rose-400 border-rose-500/20' if active_reqs else 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' %}
-
-        <div class="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden hover:border-violet-500/50 transition group shadow-lg">
+    <!-- Main panel: editable equipment form -->
+    <div class="glass-panel rounded-xl p-8 border border-slate-700 shadow-2xl bg-slate-900/50">
+        <!-- POSTs to the same equipment_detail route and expects standard form fields -->
+        <form method="POST" action="{{ url_for('equipment_detail', id=equipment.id) }}">
             
-            <div class="p-5 border-b border-slate-800 bg-slate-800/20">
-                <div class="flex justify-between items-start">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20">
-                            <i class="fas fa-cogs text-lg"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-bold text-white group-hover:text-violet-400 transition">{{ item.name }}</h3>
-                            <p class="text-[10px] text-slate-500 font-mono">{{ item.serial_number }}</p>
+            <!-- Two-column grid: left = identifiers & assignment, right = location & scheduling -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 mb-8">
+                
+                <!-- Left column: name, serial, department, maintenance team -->
+                <div class="space-y-5">
+                    <div>
+                        <!-- Equipment name: human-friendly label -->
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Equipment Name</label>
+                        <input type="text" name="name" value="{{ equipment.name }}" required
+                            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all font-medium">
+                    </div>
+
+                    <div>
+                        <!-- Serial/Model: used for asset identification -->
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Serial Number / Model</label>
+                        <input type="text" name="serial_number" value="{{ equipment.serial_number }}" required
+                            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500">
+                    </div>
+
+                    <div>
+                        <!-- Department select: options populated from departments context -->
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5"><i class="far fa-building mr-1"></i> Department</label>
+                        <div class="relative">
+                            <select name="department" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
+                                {% for dept in departments %}
+                                <option value="{{ dept.id }}" {% if equipment.department_id == dept.id %}selected{% endif %}>
+                                    {{ dept.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <!-- Decorative chevron; not interactive -->
+                            <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
                         </div>
                     </div>
-                    <span class="px-2 py-0.5 rounded text-[10px] font-bold border {{ status_class }}">
-                        {{ status_text }}
-                    </span>
+
+                    <div>
+                        <!-- Maintenance team select: choose which team owns this asset -->
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Maintenance Team</label>
+                        <div class="relative">
+                            <select name="team" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
+                                {% for team in teams %}
+                                <option value="{{ team.id }}" {% if equipment.team_id == team.id %}selected{% endif %}>
+                                    {{ team.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right column: location, work center, scrap scheduling -->
+                <div class="space-y-5">
+                    
+                    <div>
+                        <!-- Location: physical placement of the equipment -->
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5"><i class="fas fa-map-marker-alt mr-1"></i> Location</label>
+                        <input type="text" name="location" value="{{ equipment.location }}" 
+                            class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500">
+                    </div>
+
+                    <div>
+                        <!-- Work center: optional mapping to production area or cell -->
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Work Center</label>
+                        <div class="relative">
+                            <select name="work_center" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
+                                <option value="">Select Work Center (Optional)</option>
+                                {% for wc in work_centers %}
+                                <option value="{{ wc.id }}">
+                                    {{ wc.name }} ({{ wc.code }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
+                        </div>
+                    </div>
+
+                    <div>
+                        <!-- Scrap date: schedule asset removal; optional field -->
+                        <label class="block text-xs font-bold text-rose-400 uppercase mb-1.5"><i class="far fa-calendar-times mr-1"></i> Scrap Date</label>
+                        <input type="date" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all placeholder-slate-500">
+                        <p class="text-[10px] text-slate-500 mt-1">Set a date to schedule equipment for scrap</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="p-5 space-y-3">
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-500">Location</span>
-                    <span class="text-slate-300">{{ item.location or 'Not Specified' }}</span>
-                </div>
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-500">Department</span>
-                    <span class="text-slate-300">{{ item.department.name if item.department else 'N/A' }}</span>
-                </div>
-                <div class="flex justify-between text-xs">
-                    <span class="text-slate-500">Maint. Team</span>
-                    <span class="text-violet-300">{{ item.team.name if item.team else 'Unassigned' }}</span>
-                </div>
+            <!-- Tabs/navigation for detailed sections (only Description active here) -->
+            <div class="mb-4 border-b border-slate-700">
+                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+                    <li class="mr-2">
+                        <button type="button" class="inline-block p-4 text-violet-400 border-b-2 border-violet-500 rounded-t-lg active">Description</button>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Description: notes and free-text about the equipment -->
+            <div class="bg-slate-800/30 p-4 rounded-lg border border-slate-700/50 min-h-[100px]">
+                <textarea name="description" class="w-full bg-transparent border-none text-sm text-slate-300 focus:ring-0 p-0" rows="3" placeholder="Add equipment notes here...">No detailed description available.</textarea>
             </div>
 
-            <div class="p-3 bg-slate-950/30 border-t border-slate-800 flex justify-end">
-                <a href="{{ url_for('equipment_detail', id=item.id) }}" 
-                   class="text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded border border-slate-700 transition flex items-center gap-2">
-                    View Details <i class="fas fa-arrow-right"></i>
-                </a>
+            <!-- Action buttons: Cancel returns to list, Save submits form -->
+            <div class="mt-8 flex justify-end gap-3 pt-6 border-t border-slate-700/50">
+                <a href="{{ url_for('equipment') }}" class="px-5 py-2.5 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition">Cancel</a>
+                <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg shadow-lg shadow-violet-500/20 transition transform hover:-translate-y-0.5">Save Changes</button>
             </div>
-        </div>
-        {% else %}
-        <div class="col-span-3 text-center py-12 border-2 border-dashed border-slate-800 rounded-xl">
-            <div class="text-slate-600 mb-3"><i class="fas fa-box-open text-4xl"></i></div>
-            <h3 class="text-slate-300 font-medium">No Equipment Found</h3>
-            <p class="text-slate-500 text-xs">Run the seed script to generate dummy data.</p>
-        </div>
-        {% endfor %}
-
+        </form>
     </div>
 </div>
 {% endblock %}
