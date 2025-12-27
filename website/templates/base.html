@@ -8,55 +8,81 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="flex h-screen overflow-hidden bg-slate-900 text-slate-50">
 
     <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between z-20">
+        
         <div>
             <div class="p-6 flex items-center gap-3">
-                <div class="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center">
+                <div class="w-8 h-8 bg-violet-600 rounded-lg flex items-center justify-center shadow-lg shadow-violet-900/20">
                     <i class="fa-solid fa-shield-halved text-white"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg text-white">GearGuard</h1>
-                    <p class="text-xs text-slate-400">Maintenance Hub</p>
+                    <h1 class="font-bold text-lg text-white tracking-tight">GearGuard</h1>
+                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Maintenance Hub</p>
                 </div>
             </div>
-            <nav class="mt-6 space-y-1 px-3">
-                <a href="{{ url_for('dashboard') }}" class="sidebar-link {{ 'active' if page == 'dashboard' else '' }} flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-300 rounded-md hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-grid-2 text-lg w-6"></i> Dashboard
+            
+            <nav class="mt-2 space-y-1 px-3">
+                <a href="{{ url_for('dashboard') }}" class="sidebar-link {{ 'active' if page == 'dashboard' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-grid-2 text-lg w-5 text-center"></i> Dashboard
                 </a>
-                <a href="{{ url_for('schedule') }}" class="sidebar-link {{ 'active' if page == 'schedule' else '' }} flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-300 rounded-md hover:bg-slate-800 transition">
-                    <i class="fa-regular fa-calendar text-lg w-6"></i> Schedule
+                <a href="{{ url_for('schedule') }}" class="sidebar-link {{ 'active' if page == 'schedule' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-regular fa-calendar text-lg w-5 text-center"></i> Calendar
                 </a>
-                <a href="{{ url_for('maintenance_requests') }}" class="sidebar-link {{ 'active' if page == 'requests' else '' }} flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-300 rounded-md hover:bg-slate-800 transition">
-                    <i class="fa-regular fa-clipboard text-lg w-6"></i> Requests
+                <a href="{{ url_for('maintenance_requests') }}" class="sidebar-link {{ 'active' if page == 'requests' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-regular fa-clipboard text-lg w-5 text-center"></i> Requests
                 </a>
-                <a href="{{ url_for('equipment') }}" class="sidebar-link {{ 'active' if page == 'equipment' else '' }} flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-300 rounded-md hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-cog text-lg w-6"></i> Equipment
+                <a href="{{ url_for('equipment') }}" class="sidebar-link {{ 'active' if page == 'equipment' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-cog text-lg w-5 text-center"></i> Equipment
                 </a>
-                <a href="{{ url_for('teams') }}" class="sidebar-link {{ 'active' if page == 'teams' else '' }} flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-300 rounded-md hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-users text-lg w-6"></i> Teams
+                <a href="{{ url_for('teams') }}" class="sidebar-link {{ 'active' if page == 'teams' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-users text-lg w-5 text-center"></i> Teams
                 </a>
-                <a href="{{ url_for('work_centers') }}" class="sidebar-link {{ 'active' if page == 'work_centers' else '' }} flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-300 rounded-md hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-industry text-lg w-6"></i> Work Centers
+                <a href="{{ url_for('work_centers') }}" class="sidebar-link {{ 'active' if page == 'work_centers' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-industry text-lg w-5 text-center"></i> Work Centers
                 </a>
-                <a href="{{ url_for('reporting') }}" class="sidebar-link {{ 'active' if page == 'reporting' else '' }} flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-300 rounded-md hover:bg-slate-800 transition">
-                    <i class="fa-solid fa-chart-bar text-lg w-6"></i> Reporting
+                <a href="{{ url_for('reporting') }}" class="sidebar-link {{ 'active' if page == 'reporting' else '' }} flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-400 rounded-md hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-chart-bar text-lg w-5 text-center"></i> Reporting
                 </a>
             </nav>
         </div>
+
         <div class="p-4 border-t border-slate-800">
-            <div class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-800 cursor-pointer">
-                <div class="w-8 h-8 rounded-full bg-violet-900 flex items-center justify-center text-xs font-bold text-violet-200">JD</div>
-                <div>
-                    <p class="text-sm font-medium text-white">{{ current_user_name or 'Guest' }}</p>
-                    <p class="text-xs text-slate-500">{{ current_user_role or '—' }}</p>
+            <div class="flex items-center justify-between p-3 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 flex-shrink-0 flex items-center justify-center text-xs font-bold text-white shadow-md">
+                        {{ session.get('user_name', 'User')[:2].upper() }}
+                    </div>
+                    
+                    <div class="overflow-hidden">
+                        <p class="text-xs font-bold text-white truncate w-24 leading-tight">{{ session.get('user_name', 'Guest') }}</p>
+                        <p class="text-[10px] text-slate-500 capitalize leading-tight">{{ session.get('user_role', 'Technician') }}</p>
+                    </div>
                 </div>
+                
+                <a href="{{ url_for('auth.logout') }}" class="text-slate-400 hover:text-rose-500 transition p-1.5 hover:bg-rose-500/10 rounded-md" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
             </div>
         </div>
     </aside>
 
-    <main class="flex-1 overflow-y-auto bg-slate-900 p-8">
+    <main class="flex-1 overflow-y-auto p-8 relative scroll-smooth">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6 space-y-2">
+                    {% for category, message in messages %}
+                        <div class="p-3 rounded-lg text-sm font-medium border flex items-center gap-3 shadow-lg animate-pulse
+                            {{ 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' if category == 'success' else 'bg-rose-500/10 text-rose-400 border-rose-500/20' }}">
+                            <i class="{{ 'fas fa-check-circle' if category == 'success' else 'fas fa-exclamation-circle' }}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         {% block content %}{% endblock %}
     </main>
 

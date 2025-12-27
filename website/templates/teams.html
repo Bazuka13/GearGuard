@@ -4,8 +4,8 @@
 <div class="fade-in">
     <div class="flex justify-between items-center mb-6">
         <div>
-            <h2 class="text-xl font-bold text-white tracking-tight">Teams</h2>
-            <p class="text-xs text-slate-400 mt-0.5">Manage maintenance teams and technicians</p>
+            <h2 class="text-xl font-bold text-white tracking-tight">Maintenance Teams</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Manage teams and assign technicians</p>
         </div>
         <button class="bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 rounded-md flex items-center gap-2 text-xs font-medium shadow-lg transition-all">
             <i class="fas fa-plus"></i> Add Team
@@ -14,114 +14,38 @@
 
     <div class="space-y-6">
         
+        {% for team in teams %}
         <div class="bg-slate-900/50 border border-slate-800 rounded-lg p-5 shadow-lg">
             <div class="flex justify-between items-start mb-4">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-lg bg-violet-600 flex items-center justify-center text-white shadow-lg shadow-violet-900/50">
-                        <i class="fas fa-shield-halved text-lg"></i>
+                        <i class="fas fa-users-gear text-lg"></i>
                     </div>
                     <div>
-                        <h3 class="text-base font-bold text-white">Alpha Team</h3>
-                        <p class="text-xs text-slate-400">Primary maintenance team for CNC and precision equipment</p>
+                        <h3 class="text-base font-bold text-white">{{ team.name }}</h3>
+                        <p class="text-xs text-slate-400"> specialized maintenance unit</p>
                     </div>
                 </div>
-                <span class="text-xs text-slate-500 font-medium"><i class="fas fa-users mr-1"></i> 3 Members</span>
+                <span class="text-xs text-slate-500 font-medium bg-slate-800 px-2 py-1 rounded border border-slate-700">
+                    <i class="fas fa-user-wrench mr-1"></i> {{ team.technicians|length }} Technicians
+                </span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                
+                {% for tech in team.technicians %}
                 <div class="bg-slate-800/50 border border-slate-700/50 rounded-md p-3 hover:border-violet-500/30 transition group">
                     <div class="flex items-center gap-3 mb-2">
-                        <div class="w-8 h-8 rounded-full bg-violet-900/50 text-violet-300 flex items-center justify-center text-xs font-bold border border-violet-500/20">MR</div>
-                        <div>
-                            <h4 class="text-sm font-semibold text-white group-hover:text-violet-400 transition">Mike Ross</h4>
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                <span class="text-[10px] text-slate-400">Lead Technician</span>
+                        {% if tech.photo_url %}
+                            <img src="{{ tech.photo_url }}" alt="{{ tech.name }}" class="w-8 h-8 rounded-full border border-slate-600 object-cover">
+                        {% else %}
+                            <div class="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center text-xs font-bold border border-slate-600">
+                                {{ tech.name[:2].upper() }}
                             </div>
-                        </div>
-                    </div>
-                    <div class="space-y-1 pl-11">
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-envelope w-4"></i> mike.ross@gear.com</p>
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-phone w-4"></i> +1 234 567 890</p>
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-map-marker-alt w-4"></i> Building A</p>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/50 border border-slate-700/50 rounded-md p-3 hover:border-violet-500/30 transition group">
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center text-xs font-bold">SC</div>
+                        {% endif %}
+                        
                         <div>
-                            <h4 class="text-sm font-semibold text-white group-hover:text-violet-400 transition">Sarah Chen</h4>
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                <span class="text-[10px] text-slate-400">Senior Technician</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="space-y-1 pl-11">
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-envelope w-4"></i> sarah.c@gear.com</p>
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-phone w-4"></i> +1 234 567 891</p>
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-map-marker-alt w-4"></i> Building A</p>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/50 border border-slate-700/50 rounded-md p-3 hover:border-violet-500/30 transition group">
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center text-xs font-bold">JS</div>
-                        <div>
-                            <h4 class="text-sm font-semibold text-white group-hover:text-violet-400 transition">John Smith</h4>
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                <span class="text-[10px] text-slate-400">Technician (On Break)</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="space-y-1 pl-11">
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-envelope w-4"></i> john.s@gear.com</p>
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-phone w-4"></i> +1 234 567 892</p>
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-map-marker-alt w-4"></i> Building B</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-slate-900/50 border border-slate-800 rounded-lg p-5 shadow-lg">
-            <div class="flex justify-between items-start mb-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-900/50">
-                        <i class="fas fa-industry text-lg"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-base font-bold text-white">Beta Team</h3>
-                        <p class="text-xs text-slate-400">Conveyor systems and material handling specialists</p>
-                    </div>
-                </div>
-                <span class="text-xs text-slate-500 font-medium"><i class="fas fa-users mr-1"></i> 2 Members</span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div class="bg-slate-800/50 border border-slate-700/50 rounded-md p-3 hover:border-indigo-500/30 transition group">
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="w-8 h-8 rounded-full bg-indigo-900/50 text-indigo-300 flex items-center justify-center text-xs font-bold border border-indigo-500/20">ED</div>
-                        <div>
-                            <h4 class="text-sm font-semibold text-white group-hover:text-indigo-400 transition">Emily Davis</h4>
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                <span class="text-[10px] text-slate-400">Lead Technician</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="space-y-1 pl-11">
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-envelope w-4"></i> emily.d@gear.com</p>
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-map-marker-alt w-4"></i> Building B</p>
-                    </div>
-                </div>
-
-                <div class="bg-slate-800/50 border border-slate-700/50 rounded-md p-3 hover:border-indigo-500/30 transition group">
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="w-8 h-8 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center text-xs font-bold">AJ</div>
-                        <div>
-                            <h4 class="text-sm font-semibold text-white group-hover:text-indigo-400 transition">Alex Johnson</h4>
+                            <h4 class="text-sm font-semibold text-white group-hover:text-violet-400 transition">{{ tech.name }}</h4>
                             <div class="flex items-center gap-1.5">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                                 <span class="text-[10px] text-slate-400">Technician</span>
@@ -129,12 +53,31 @@
                         </div>
                     </div>
                     <div class="space-y-1 pl-11">
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-envelope w-4"></i> alex.j@gear.com</p>
-                        <p class="text-[10px] text-slate-500"><i class="fas fa-map-marker-alt w-4"></i> Building C</p>
+                        <p class="text-[10px] text-slate-500 truncate" title="{{ tech.email }}">
+                            <i class="fas fa-envelope w-4"></i> {{ tech.email }}
+                        </p>
+                        <p class="text-[10px] text-slate-500">
+                            <i class="fas fa-id-badge w-4"></i> ID: #{{ tech.id }}
+                        </p>
                     </div>
                 </div>
+                {% else %}
+                <div class="col-span-3 text-center py-4 border border-dashed border-slate-700 rounded-lg">
+                    <p class="text-xs text-slate-500">No technicians assigned to this team yet.</p>
+                </div>
+                {% endfor %}
+
             </div>
         </div>
+        {% else %}
+        <div class="text-center py-10">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-800 mb-4">
+                <i class="fas fa-users-slash text-slate-500 text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-white">No Teams Found</h3>
+            <p class="text-slate-400 text-sm mt-2">Get started by creating your first maintenance team.</p>
+        </div>
+        {% endfor %}
 
     </div>
 </div>

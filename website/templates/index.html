@@ -3,65 +3,196 @@
 {% block content %}
 <div class="fade-in">
     <div class="mb-8">
-        <h2 class="text-2xl font-bold text-white">Command Center</h2>
-        <p class="text-slate-400">Real-time overview of your maintenance operations</p>
+        <h2 class="text-2xl font-bold text-white">Dashboard</h2>
+        <p class="text-slate-400">Welcome, {{ session.get('user_name') }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl p-6 shadow-lg relative overflow-hidden">
             <div class="relative z-10">
                 <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mb-4 backdrop-blur-sm"><i class="fa-solid fa-triangle-exclamation text-white text-xl"></i></div>
-                <p class="text-rose-100 font-medium">Critical Equipment</p>
-                <h3 class="text-3xl font-bold text-white mt-1">5 Units</h3>
-                <p class="text-xs text-rose-200 mt-2">Health < 30%</p>
+                <p class="text-rose-100 font-medium">Action Required</p>
+                <h3 class="text-3xl font-bold text-white mt-1">{{ new_reqs|length }} Requests</h3>
+                <p class="text-xs text-rose-200 mt-2">New Tickets Pending</p>
             </div>
         </div>
         <div class="bg-gradient-to-br from-sky-500 to-sky-600 rounded-xl p-6 shadow-lg relative overflow-hidden">
             <div class="relative z-10">
-                <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mb-4 backdrop-blur-sm"><i class="fa-solid fa-users-gear text-white text-xl"></i></div>
-                <p class="text-sky-100 font-medium">Technician Load</p>
-                <h3 class="text-3xl font-bold text-white mt-1">85% Utilized</h3>
-                <p class="text-xs text-sky-200 mt-2">Assign Carefully</p>
+                <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mb-4 backdrop-blur-sm"><i class="fa-solid fa-spinner text-white text-xl"></i></div>
+                <p class="text-sky-100 font-medium">In Progress</p>
+                <h3 class="text-3xl font-bold text-white mt-1">{{ progress_reqs|length }} Jobs</h3>
+                <p class="text-xs text-sky-200 mt-2">Currently Active</p>
             </div>
         </div>
         <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-6 shadow-lg relative overflow-hidden">
             <div class="relative z-10">
                 <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mb-4 backdrop-blur-sm"><i class="fa-solid fa-clipboard-check text-white text-xl"></i></div>
-                <p class="text-emerald-100 font-medium">Open Requests</p>
-                <h3 class="text-3xl font-bold text-white mt-1">12 Pending</h3>
-                <p class="text-xs text-emerald-200 mt-2">3 Overdue</p>
+                <p class="text-emerald-100 font-medium">Completed</p>
+                <h3 class="text-3xl font-bold text-white mt-1">{{ repaired_reqs|length }} Jobs</h3>
+                <p class="text-xs text-emerald-200 mt-2">Repaired Successfully</p>
             </div>
         </div>
     </div>
 
     <h3 class="text-lg font-semibold text-white mb-4">Maintenance Workflow</h3>
+    
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 h-[500px]">
-        <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700 flex flex-col">
-            <div class="flex justify-between items-center mb-4"><h4 class="font-semibold text-slate-200">New Request</h4><span class="bg-slate-700 text-xs px-2 py-1 rounded-full text-slate-300">3</span></div>
-            <div class="space-y-3">
-                <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 shadow-sm hover:border-violet-500 transition cursor-pointer">
-                    <div class="flex justify-between items-start mb-2"><span class="text-sm font-semibold text-white">Leaking Oil</span><div class="text-amber-400 text-xs"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div>
-                    <p class="text-xs text-slate-400 mb-3">CNC Machine #3</p>
-                    <div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-violet-600 text-[10px] flex items-center justify-center text-white">MR</div><span class="text-xs text-slate-500">Mike Ross</span></div>
+        
+        <div class="kanban-col bg-slate-800/50 rounded-xl p-4 border border-slate-700 flex flex-col transition-colors" 
+             ondrop="drop(event)" ondragover="allowDrop(event)" data-stage="New Request">
+            
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="font-semibold text-slate-200">New Request</h4>
+                <span class="bg-slate-700 text-xs px-2 py-1 rounded-full text-slate-300 count-badge">{{ new_reqs|length }}</span>
+            </div>
+            
+            <div class="kanban-items space-y-3 h-full overflow-y-auto">
+                {% for req in new_reqs %}
+                <div id="task-{{ req.id }}" draggable="true" ondragstart="drag(event)" class="bg-slate-800 p-4 rounded-lg border border-slate-700 shadow-sm hover:border-violet-500 cursor-grab active:cursor-grabbing transition group">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-semibold text-white">{{ req.description }}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-3">{{ req.equipment.name }}</p>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full bg-slate-600 text-[10px] flex items-center justify-center text-white">
+                             {{ req.technician.name[:2].upper() if req.technician else 'NA' }}
+                        </div>
+                        <span class="text-xs text-slate-500">{{ req.technician.name if req.technician else 'Unassigned' }}</span>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
-        <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700 flex flex-col">
-            <div class="flex justify-between items-center mb-4"><h4 class="font-semibold text-slate-200">In Progress</h4><span class="bg-slate-700 text-xs px-2 py-1 rounded-full text-slate-300">2</span></div>
-            <div class="space-y-3">
-                 <div class="bg-slate-800 p-4 rounded-lg border border-slate-700 shadow-sm hover:border-violet-500 transition cursor-pointer">
-                    <div class="flex justify-between items-start mb-2"><span class="text-sm font-semibold text-white">Belt Replacement</span><div class="text-amber-400 text-xs"><i class="fas fa-star"></i><i class="fas fa-star"></i></div></div>
-                    <p class="text-xs text-slate-400 mb-3">Conveyor Belt B</p>
-                    <div class="flex items-center gap-2"><div class="w-6 h-6 rounded-full bg-pink-600 text-[10px] flex items-center justify-center text-white">JS</div><span class="text-xs text-slate-500">John Smith</span></div>
+
+        <div class="kanban-col bg-slate-800/50 rounded-xl p-4 border border-slate-700 flex flex-col transition-colors" 
+             ondrop="drop(event)" ondragover="allowDrop(event)" data-stage="In Progress">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="font-semibold text-slate-200">In Progress</h4>
+                <span class="bg-slate-700 text-xs px-2 py-1 rounded-full text-slate-300 count-badge">{{ progress_reqs|length }}</span>
+            </div>
+            <div class="kanban-items space-y-3 h-full overflow-y-auto">
+                {% for req in progress_reqs %}
+                <div id="task-{{ req.id }}" draggable="true" ondragstart="drag(event)" class="bg-slate-800 p-4 rounded-lg border border-slate-700 shadow-sm hover:border-violet-500 cursor-grab active:cursor-grabbing transition group">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-semibold text-white">{{ req.description }}</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-3">{{ req.equipment.name }}</p>
+                    <div class="flex items-center gap-2">
+                         <div class="w-6 h-6 rounded-full bg-violet-600 text-[10px] flex items-center justify-center text-white">
+                             {{ req.technician.name[:2].upper() if req.technician else 'NA' }}
+                        </div>
+                        <span class="text-xs text-slate-500">{{ req.technician.name if req.technician else 'Unassigned' }}</span>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
-        <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700 flex flex-col">
-            <div class="flex justify-between items-center mb-4"><h4 class="font-semibold text-slate-200">Repaired</h4></div>
+
+        <div class="kanban-col bg-slate-800/50 rounded-xl p-4 border border-slate-700 flex flex-col transition-colors" 
+             ondrop="drop(event)" ondragover="allowDrop(event)" data-stage="Repaired">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="font-semibold text-slate-200">Repaired</h4>
+                <span class="bg-slate-700 text-xs px-2 py-1 rounded-full text-slate-300 count-badge">{{ repaired_reqs|length }}</span>
+            </div>
+            <div class="kanban-items space-y-3 h-full overflow-y-auto">
+                {% for req in repaired_reqs %}
+                <div id="task-{{ req.id }}" draggable="true" ondragstart="drag(event)" class="bg-slate-800 p-4 rounded-lg border border-slate-700 shadow-sm hover:border-violet-500 cursor-grab active:cursor-grabbing transition group opacity-75">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-semibold text-white line-through decoration-slate-500">{{ req.description }}</span>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30">Done</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-3">{{ req.equipment.name }}</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
-        <div class="bg-slate-900 rounded-xl p-4 border border-slate-700 flex flex-col" style="background-image: repeating-linear-gradient(45deg, #1e293b 0, #1e293b 10px, #0f172a 10px, #0f172a 20px);">
-            <div class="flex justify-between items-center mb-4"><h4 class="font-semibold text-slate-400">Scrap</h4></div>
+
+        <div class="kanban-col bg-slate-900 rounded-xl p-4 border border-slate-700 flex flex-col transition-colors" 
+             style="background-image: repeating-linear-gradient(45deg, #1e293b 0, #1e293b 10px, #0f172a 10px, #0f172a 20px);"
+             ondrop="drop(event)" ondragover="allowDrop(event)" data-stage="Scrap">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="font-semibold text-slate-400">Scrap</h4>
+                <span class="bg-slate-800 text-xs px-2 py-1 rounded-full text-slate-500 count-badge">{{ scrap_reqs|length }}</span>
+            </div>
+            <div class="kanban-items space-y-3 h-full overflow-y-auto">
+                {% for req in scrap_reqs %}
+                <div id="task-{{ req.id }}" draggable="true" ondragstart="drag(event)" class="bg-slate-800 p-4 rounded-lg border border-rose-900/50 shadow-sm hover:border-rose-500 cursor-grab active:cursor-grabbing transition group">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-semibold text-rose-300">{{ req.description }}</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-3">{{ req.equipment.name }}</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    function allowDrop(ev) {
+        ev.preventDefault();
+        // Visual Feedback: Highlight border when hovering
+        ev.currentTarget.classList.add('border-violet-500', 'bg-slate-700/50');
+    }
+
+    // Reset style when leaving the drop zone
+    document.querySelectorAll('.kanban-col').forEach(col => {
+        col.addEventListener('dragleave', function(ev) {
+            this.classList.remove('border-violet-500', 'bg-slate-700/50');
+        });
+    });
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+        ev.target.style.opacity = '0.5';
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        
+        // Remove Visual Feedback
+        ev.currentTarget.classList.remove('border-violet-500', 'bg-slate-700/50');
+
+        var data = ev.dataTransfer.getData("text");
+        var card = document.getElementById(data);
+        
+        // Reset Opacity
+        if(card) card.style.opacity = '1';
+
+        // Append card to the .kanban-items container within the dropped column
+        var itemsContainer = ev.currentTarget.querySelector('.kanban-items');
+        itemsContainer.appendChild(card);
+        
+        // Update Count Badges (Visual Only)
+        updateCounts();
+
+        // Prepare Data for API
+        var taskId = data.split('-')[1]; // Extracts ID from 'task-1'
+        var newStage = ev.currentTarget.getAttribute('data-stage');
+
+        console.log("Moving Task:", taskId, "to Stage:", newStage);
+
+        // Send to Backend
+        fetch('/api/update_stage', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ task_id: taskId, new_stage: newStage })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                console.log("Database Updated Successfully");
+            } else {
+                console.error("Database Update Failed");
+            }
+        });
+    }
+
+    function updateCounts() {
+        document.querySelectorAll('.kanban-col').forEach(col => {
+            const count = col.querySelector('.kanban-items').children.length;
+            col.querySelector('.count-badge').innerText = count;
+        });
+    }
+</script>
 {% endblock %}

@@ -1,18 +1,212 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <div class="fade-in">
-    <h2 class="text-2xl font-bold text-white mb-6">Work Centers</h2>
-    <div class="glass-panel rounded-xl overflow-hidden">
-        <table class="w-full text-left text-sm text-slate-400">
-            <thead class="bg-slate-800 text-xs uppercase font-medium text-slate-300">
-                <tr><th class="px-6 py-4">Name</th><th class="px-6 py-4">Code</th><th class="px-6 py-4">Efficiency</th></tr>
-            </thead>
-            <tbody class="divide-y divide-slate-800">
-                <tr>
-                    <td class="px-6 py-4 flex items-center gap-3"><i class="fas fa-industry text-violet-400"></i> <span class="text-white">Main Assembly</span></td>
-                    <td class="px-6 py-4">WC-001</td>
-                    <td class="px-6 py-4"><div class="flex items-center gap-2"><div class="w-24 h-1.5 bg-slate-700 rounded-full overflow-hidden"><div class="bg-emerald-500 h-full" style="width: 92%"></div></div><span class="text-xs text-emerald-400">92%</span></div></td>
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="text-xl font-bold text-white tracking-tight">Work Centers</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Manufacturing centers and their efficiency metrics</p>
+        </div>
+        
+        <div class="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2">
+            <i class="fas fa-industry text-slate-400 text-xs"></i>
+            <span class="text-xs font-medium text-white">8 Centers Active</span>
+        </div>
+    </div>
+
+    <div class="glass-panel rounded-xl overflow-hidden shadow-2xl border border-slate-700/50">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="bg-slate-900/50 border-b border-slate-800 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                    <th class="px-6 py-4"><i class="far fa-building mr-2"></i> Work Center Name</th>
+                    <th class="px-6 py-4">Code</th>
+                    <th class="px-6 py-4"><i class="far fa-clock mr-2"></i> Cost per Hour</th>
+                    <th class="px-6 py-4"><i class="fas fa-chart-line mr-2"></i> Capacity Efficiency</th>
+                    <th class="px-6 py-4"><i class="fas fa-bullseye mr-2"></i> OEE Target</th>
                 </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800 text-sm">
+                
+                <tr class="hover:bg-slate-800/40 transition group">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-violet-600/10 text-violet-400 flex items-center justify-center border border-violet-500/20 group-hover:border-violet-500/50 transition">
+                                <i class="fas fa-industry"></i>
+                            </div>
+                            <span class="text-white font-semibold text-xs group-hover:text-violet-300 transition">Main Assembly Line</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="bg-[#1e1b4b] text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-mono tracking-wide">WC-001</span>
+                    </td>
+                    <td class="px-6 py-4 text-white font-bold text-xs">$150.00</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-24 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-full rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: 92%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-emerald-400">92%</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded-full text-[10px] font-bold border border-sky-500/20">85%</span>
+                    </td>
+                </tr>
+
+                <tr class="hover:bg-slate-800/40 transition group">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-violet-600/10 text-violet-400 flex items-center justify-center border border-violet-500/20 group-hover:border-violet-500/50 transition">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <span class="text-white font-semibold text-xs group-hover:text-violet-300 transition">CNC Machining Center</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-[#1e1b4b] text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-mono tracking-wide">WC-002</span></td>
+                    <td class="px-6 py-4 text-white font-bold text-xs">$200.00</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-24 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                <div class="bg-sky-500 h-full rounded-full" style="width: 88%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-sky-400">88%</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded-full text-[10px] font-bold border border-sky-500/20">80%</span></td>
+                </tr>
+
+                <tr class="hover:bg-slate-800/40 transition group">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-violet-600/10 text-violet-400 flex items-center justify-center border border-violet-500/20 group-hover:border-violet-500/50 transition">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                            <span class="text-white font-semibold text-xs group-hover:text-violet-300 transition">Packaging Station</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-[#1e1b4b] text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-mono tracking-wide">WC-003</span></td>
+                    <td class="px-6 py-4 text-white font-bold text-xs">$75.00</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-24 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-full rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: 95%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-emerald-400">95%</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full text-[10px] font-bold border border-emerald-500/20">90%</span></td>
+                </tr>
+
+                <tr class="hover:bg-slate-800/40 transition group">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-violet-600/10 text-violet-400 flex items-center justify-center border border-violet-500/20 group-hover:border-violet-500/50 transition">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <span class="text-white font-semibold text-xs group-hover:text-violet-300 transition">Quality Control Lab</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-[#1e1b4b] text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-mono tracking-wide">WC-004</span></td>
+                    <td class="px-6 py-4 text-white font-bold text-xs">$120.00</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-24 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-full rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: 98%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-emerald-400">98%</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full text-[10px] font-bold border border-emerald-500/20">95%</span></td>
+                </tr>
+
+                <tr class="hover:bg-slate-800/40 transition group">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-violet-600/10 text-violet-400 flex items-center justify-center border border-violet-500/20 group-hover:border-violet-500/50 transition">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <span class="text-white font-semibold text-xs group-hover:text-violet-300 transition">Welding Bay</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-[#1e1b4b] text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-mono tracking-wide">WC-005</span></td>
+                    <td class="px-6 py-4 text-white font-bold text-xs">$180.00</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-24 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                <div class="bg-sky-500 h-full rounded-full" style="width: 85%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-sky-400">85%</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full text-[10px] font-bold border border-amber-500/20">78%</span></td>
+                </tr>
+
+                <tr class="hover:bg-slate-800/40 transition group">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-violet-600/10 text-violet-400 flex items-center justify-center border border-violet-500/20 group-hover:border-violet-500/50 transition">
+                                <i class="fas fa-spray-can"></i>
+                            </div>
+                            <span class="text-white font-semibold text-xs group-hover:text-violet-300 transition">Paint Booth</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-[#1e1b4b] text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-mono tracking-wide">WC-006</span></td>
+                    <td class="px-6 py-4 text-white font-bold text-xs">$130.00</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-24 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-full rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: 90%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-emerald-400">90%</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded-full text-[10px] font-bold border border-sky-500/20">82%</span></td>
+                </tr>
+
+                <tr class="hover:bg-slate-800/40 transition group">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-violet-600/10 text-violet-400 flex items-center justify-center border border-violet-500/20 group-hover:border-violet-500/50 transition">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <span class="text-white font-semibold text-xs group-hover:text-violet-300 transition">Electrical Assembly</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-[#1e1b4b] text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-mono tracking-wide">WC-007</span></td>
+                    <td class="px-6 py-4 text-white font-bold text-xs">$160.00</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-24 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-full rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: 94%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-emerald-400">94%</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded-full text-[10px] font-bold border border-sky-500/20">88%</span></td>
+                </tr>
+
+                 <tr class="hover:bg-slate-800/40 transition group">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-violet-600/10 text-violet-400 flex items-center justify-center border border-violet-500/20 group-hover:border-violet-500/50 transition">
+                                <i class="fas fa-flag-checkered"></i>
+                            </div>
+                            <span class="text-white font-semibold text-xs group-hover:text-violet-300 transition">Finishing Line</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-[#1e1b4b] text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-mono tracking-wide">WC-008</span></td>
+                    <td class="px-6 py-4 text-white font-bold text-xs">$100.00</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-24 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                <div class="bg-emerald-500 h-full rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: 91%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-emerald-400">91%</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="bg-sky-500/10 text-sky-400 px-2 py-0.5 rounded-full text-[10px] font-bold border border-sky-500/20">85%</span></td>
+                </tr>
+
             </tbody>
         </table>
     </div>

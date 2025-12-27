@@ -1,146 +1,128 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="fade-in">
-	<div class="flex justify-between items-center mb-6">
-		<a href="{{ url_for('equipment') }}" class="text-slate-400 hover:text-white"><i class="fas fa-arrow-left"></i> Back</a>
-		
-		<button class="bg-slate-800 border border-slate-600 text-slate-300 px-4 py-2 rounded-lg flex items-center gap-3 relative">
-			<i class="fas fa-wrench text-violet-400"></i>
-			<div class="text-left leading-tight"><span class="block text-xs font-bold text-white">Maintenance</span></div>
-			<span class="absolute -top-2 -right-2 bg-rose-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">3</span>
-		</button>
-	</div>
+<div class="fade-in max-w-6xl mx-auto"> <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center gap-4">
+            <a href="{{ url_for('equipment') }}" class="text-slate-400 hover:text-white transition flex items-center gap-2 text-sm font-medium">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <h2 class="text-2xl font-bold text-white tracking-tight">CNC Machine #3</h2>
+        </div>
+        
+        <a href="{{ url_for('maintenance_requests', q='CNC Machine #3') }}" 
+           class="bg-slate-800 border border-slate-600 text-slate-300 px-4 py-2 rounded-lg flex items-center gap-3 hover:bg-slate-700 transition relative group shadow-sm cursor-pointer no-underline">
+            
+            <i class="fas fa-wrench text-violet-400 group-hover:text-violet-300"></i>
+            
+            <div class="text-left leading-tight">
+                <span class="block text-xs font-bold text-white">Maintenance</span>
+            </div>
+            
+            <span class="absolute -top-2 -right-2 bg-rose-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md border border-slate-900">3</span>
+        </a>
+    </div>
 
-	<div class="glass-panel rounded-xl p-8">
-		<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-			<!-- left column: equipment list + create button -->
-			<div class="col-span-1 space-y-4">
-				<div class="flex items-center justify-between">
-					<h3 class="text-sm font-semibold text-white">Equipments</h3>
-					<button id="create-new-btn" class="px-3 py-1 text-xs bg-violet-600 rounded text-white">Create New</button>
-				</div>
+    <div class="glass-panel rounded-xl p-8 border border-slate-700 shadow-2xl">
+        <form>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 mb-8">
+                
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Name</label>
+                        <input type="text" value="CNC Machine #3" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all font-medium">
+                    </div>
 
-				<div class="space-y-2 max-h-72 overflow-auto">
-					{# Server should supply equipment_list: a list of equipment dicts/objects #}
-					{% for eq in equipment_list %}
-						<button type="button"
-							class="equipment-item w-full text-left p-2 rounded hover:bg-slate-800 flex justify-between items-center"
-							data-index="{{ loop.index0 }}">
-							<span class="truncate">{{ eq.name }}</span>
-							<span class="text-xs text-slate-400">{{ eq.category }}</span>
-						</button>
-					{% else %}
-						<div class="text-slate-400 text-sm">No equipment found.</div>
-					{% endfor %}
-				</div>
-			</div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Equipment Category</label>
+                        <div class="relative">
+                            <select class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
+                                <option>Machining</option>
+                                <option>Computers</option>
+                                <option>Vehicles</option>
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
+                        </div>
+                    </div>
 
-			<!-- right columns: form (spans 2 columns on large screens) -->
-			<div class="col-span-2">
-				<!-- Use a single form for create and update. Server can inspect 'mode' and 'id' -->
-				<form id="equipment-form" method="post" class="space-y-6">
-					{# If you use CSRF, include it here: e.g. {{ csrf_token() }} or {% csrf_token %} #}
-					<input type="hidden" name="id" id="equipment-id" value="{{ equipment.id if equipment else '' }}">
-					<input type="hidden" name="mode" id="form-mode" value="{{ 'update' if equipment else 'create' }}">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5"><i class="far fa-building mr-1"></i> Company</label>
+                        <input type="text" value="Main Factory" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500">
+                    </div>
 
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-						<div class="space-y-6">
-							<div>
-								<label class="block text-xs font-medium text-slate-400 mb-1">Name</label>
-								<input name="name" id="equipment-name" type="text" value="{{ equipment.name if equipment else '' }}" required
-									class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white">
-							</div>
-							<div>
-								<label class="block text-xs font-medium text-slate-400 mb-1">Category</label>
-								<select name="category" id="equipment-category"
-									class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white">
-									<option value="">Select category</option>
-									<option value="Machining" {% if equipment and equipment.category == 'Machining' %}selected{% endif %}>Machining</option>
-									<option value="Assembly" {% if equipment and equipment.category == 'Assembly' %}selected{% endif %}>Assembly</option>
-									<option value="Inspection" {% if equipment and equipment.category == 'Inspection' %}selected{% endif %}>Inspection</option>
-									{# add more categories or provide them from the server #}
-								</select>
-							</div>
-						</div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5"><i class="far fa-user mr-1"></i> Used By</label>
+                        <div class="relative">
+                            <select class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
+                                <option>Production Team A</option>
+                                <option>Logistics Dept</option>
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
+                        </div>
+                    </div>
 
-						<div class="space-y-6">
-							<div>
-								<label class="block text-xs font-medium text-slate-400 mb-1">Maintenance Team</label>
-								<input name="maintenance_team" id="equipment-team" type="text" value="{{ equipment.maintenance_team if equipment else '' }}"
-									class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white">
-							</div>
-							<div>
-								<label class="block text-xs font-medium text-rose-400 mb-1">Scrap Date</label>
-								<input name="scrap_date" id="equipment-scrap" type="date" value="{{ equipment.scrap_date if equipment else '' }}"
-									class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-white">
-							</div>
-						</div>
-					</div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Maintenance Team</label>
+                        <input type="text" value="Alpha Team" readonly class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-slate-400 text-sm cursor-not-allowed">
+                        <p class="text-[10px] text-slate-600 mt-1 italic">Auto-assigned based on equipment category</p>
+                    </div>
+                </div>
 
-					<div class="flex justify-end gap-4">
-						<button type="submit" id="save-btn" class="px-5 py-2.5 text-sm font-medium text-white bg-violet-600 rounded-lg">
-							{{ 'Save Changes' if equipment else 'Create Equipment' }}
-						</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Technician</label>
+                        <div class="relative">
+                            <select class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
+                                <option>Mike Ross</option>
+                                <option>Sarah Chen</option>
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-rose-400 uppercase mb-1.5"><i class="far fa-calendar-times mr-1"></i> Scrap Date</label>
+                        <input type="date" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition-all placeholder-slate-500">
+                        <p class="text-[10px] text-slate-500 mt-1">Set a date to schedule equipment for scrap</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5"><i class="fas fa-map-marker-alt mr-1"></i> Used in Location</label>
+                        <input type="text" value="Building A, Floor 2" class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase mb-1.5">Work Center</label>
+                        <div class="relative">
+                            <select class="w-full bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2.5 text-white text-sm focus:outline-none focus:border-violet-500 appearance-none cursor-pointer">
+                                <option>WC-001</option>
+                                <option>WC-002</option>
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-4 top-3.5 text-slate-500 text-xs pointer-events-none"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4 border-b border-slate-700">
+                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center">
+                    <li class="mr-2">
+                        <button type="button" class="inline-block p-4 text-violet-400 border-b-2 border-violet-500 rounded-t-lg active">Description</button>
+                    </li>
+                    <li class="mr-2">
+                        <button type="button" class="inline-block p-4 text-slate-400 border-b-2 border-transparent hover:text-slate-300 hover:border-slate-300 rounded-t-lg transition">Product Information</button>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="bg-slate-800/30 p-4 rounded-lg border border-slate-700/50 min-h-[100px]">
+                <textarea class="w-full bg-transparent border-none text-sm text-slate-300 focus:ring-0 p-0" rows="3">High-precision CNC machine used for manufacturing custom parts. Requires regular oil changes and calibration checks.</textarea>
+            </div>
+
+            <div class="mt-8 flex justify-end gap-3 pt-6 border-t border-slate-700/50">
+                <button type="button" class="px-5 py-2.5 text-sm font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition">Cancel</button>
+                <button type="button" class="px-5 py-2.5 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-lg shadow-lg shadow-violet-500/20 transition transform hover:-translate-y-0.5">Save Changes</button>
+            </div>
+        </form>
+    </div>
 </div>
-
-<!-- Client-side behavior: populate the form when clicking items, and clear for create -->
-<script>
-	// equipment_list should be provided by server as a JSON-serializable list of objects.
-	// Example server side (Flask): render_template('equipment_detail.html', equipment_list=equipment_list, equipment=equipment)
-	const equipmentList = {{ equipment_list | tojson | safe }};
-
-	function populateForm(item) {
-		document.getElementById('equipment-id').value = item.id ?? '';
-		document.getElementById('equipment-name').value = item.name ?? '';
-		document.getElementById('equipment-category').value = item.category ?? '';
-		document.getElementById('equipment-team').value = item.maintenance_team ?? '';
-		// ensure date formatted as YYYY-MM-DD if available
-		if (item.scrap_date) {
-			const d = new Date(item.scrap_date);
-			// pad
-			const yyyy = d.getFullYear();
-			const mm = String(d.getMonth() + 1).padStart(2, '0');
-			const dd = String(d.getDate()).padStart(2, '0');
-			document.getElementById('equipment-scrap').value = `${yyyy}-${mm}-${dd}`;
-		} else {
-			document.getElementById('equipment-scrap').value = '';
-		}
-		document.getElementById('form-mode').value = 'update';
-		document.getElementById('save-btn').textContent = 'Save Changes';
-	}
-
-	function clearFormForCreate() {
-		document.getElementById('equipment-id').value = '';
-		document.getElementById('equipment-name').value = '';
-		document.getElementById('equipment-category').value = '';
-		document.getElementById('equipment-team').value = '';
-		document.getElementById('equipment-scrap').value = '';
-		document.getElementById('form-mode').value = 'create';
-		document.getElementById('save-btn').textContent = 'Create Equipment';
-	}
-
-	// wire up left list buttons
-	document.addEventListener('DOMContentLoaded', () => {
-		const items = document.querySelectorAll('.equipment-item');
-		items.forEach(btn => {
-			btn.addEventListener('click', () => {
-				const idx = Number(btn.getAttribute('data-index'));
-				const item = equipmentList[idx];
-				if (item) populateForm(item);
-				// optionally focus first field
-				document.getElementById('equipment-name').focus();
-			});
-		});
-
-		document.getElementById('create-new-btn').addEventListener('click', () => {
-			clearFormForCreate();
-			document.getElementById('equipment-name').focus();
-		});
-	});
-</script>
 {% endblock %}

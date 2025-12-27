@@ -1,18 +1,68 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <div class="fade-in">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-white">Equipment</h2>
-        <a href="{{ url_for('equipment_detail') }}" class="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm font-medium">Create New</a>
+        <div>
+            <h2 class="text-xl font-bold text-white tracking-tight">Equipment Inventory</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Manage machinery and assets</p>
+        </div>
+        <button class="bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 rounded-md flex items-center gap-2 text-xs font-medium shadow-lg transition-all">
+            <i class="fas fa-plus"></i> Add Machine
+        </button>
     </div>
-    <div class="space-y-3">
-        <a href="{{ url_for('equipment_detail') }}" class="block bg-slate-800 p-4 rounded-xl border border-slate-700 flex items-center justify-between hover:border-violet-500 transition group">
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 rounded-lg bg-violet-900/30 flex items-center justify-center text-violet-400"><i class="fas fa-wrench"></i></div>
-                <div><h4 class="text-white font-medium group-hover:text-violet-400">CNC Machine #3</h4><p class="text-xs text-slate-500">Machining</p></div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        {% for item in equipment_list %}
+        <div class="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden hover:border-violet-500/50 transition group shadow-lg">
+            
+            <div class="p-5 border-b border-slate-800 bg-slate-800/20">
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20">
+                            <i class="fas fa-cogs text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white group-hover:text-violet-400 transition">{{ item.name }}</h3>
+                            <p class="text-[10px] text-slate-500 font-mono">{{ item.serial_number }}</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        Active
+                    </span>
+                </div>
             </div>
-            <span class="text-xs bg-slate-700 text-slate-300 px-3 py-1 rounded-full">3 Maintenance</span>
-        </a>
+
+            <div class="p-5 space-y-3">
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-500">Location</span>
+                    <span class="text-slate-300">{{ item.location or 'Not Specified' }}</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-500">Department</span>
+                    <span class="text-slate-300">{{ item.department.name if item.department else 'N/A' }}</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-slate-500">Maint. Team</span>
+                    <span class="text-violet-300">{{ item.team.name if item.team else 'Unassigned' }}</span>
+                </div>
+            </div>
+
+            <div class="p-3 bg-slate-950/30 border-t border-slate-800 flex justify-end">
+                <a href="{{ url_for('equipment_detail', id=item.id) }}" class="text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded border border-slate-700 transition flex items-center gap-2">
+                    View Details <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-span-3 text-center py-12 border-2 border-dashed border-slate-800 rounded-xl">
+            <div class="text-slate-600 mb-3"><i class="fas fa-box-open text-4xl"></i></div>
+            <h3 class="text-slate-300 font-medium">No Equipment Found</h3>
+            <p class="text-slate-500 text-xs">Run the seed script to generate dummy data.</p>
+        </div>
+        {% endfor %}
+
     </div>
 </div>
 {% endblock %}
